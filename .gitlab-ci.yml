@@ -1,0 +1,32 @@
+cache:
+    paths:
+        - node_modules/
+
+stages:
+    - init
+    - build
+    - deploy
+
+init:
+    stage: init
+    image: node:latest
+    script:
+        - npm install
+
+build:
+    stage: build
+    image: node:latest
+    script:
+        - npm run build
+
+deploy:
+    image: node:latest
+    stage: deploy
+    script:
+        - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/sample-website-api.git HEAD:master
+        - echo "Deployed to production server"
+    environment:
+        name: production
+        url: https://sample-website-api.herokuapp.com/
+    only:
+        - master

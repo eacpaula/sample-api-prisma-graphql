@@ -1,0 +1,210 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["nativeTypes"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique @db.VarChar(120)
+  password  String    @db.VarChar(256)
+  createdAt DateTime  @default(now()) @db.Timestamp
+  updatedAt DateTime? @db.Timestamp
+  role      Role?     @default(USER)
+
+  banners  Banner[]  @relation("user_created_banner")
+  products Product[] @relation("user_created_product")
+  news     News[]    @relation("user_created_news")
+  segments Segment[] @relation("user_created_segment")
+  clients  Client[]  @relation("user_created_client")
+  subjects Subject[] @relation("user_created_subject")
+  areas    Area[]    @relation("user_created_area")
+  Banner   Banner[]  @relation("user_updated_banner")
+  Product  Product[] @relation("user_updated_product")
+  News     News[]    @relation("user_updated_news")
+  Segment  Segment[] @relation("user_updated_segment")
+  Client   Client[]  @relation("user_updated_client")
+  Subject  Subject[] @relation("user_updated_subject")
+  Area     Area[]    @relation("user_updated_area")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Media {
+  id                Int          @id @default(autoincrement())
+  path              String       @db.VarChar(5000)
+  filename          String       @db.VarChar(250)
+  filename_original String       @db.VarChar(250)
+  extension         String       @db.VarChar(50)
+  mimetype          String       @db.VarChar(50)
+  Banner            Banner[]
+  Product           Product[]
+  News              News[]
+  Client            Client[]
+  WorkWithUs        WorkWithUs[]
+}
+
+model Banner {
+  id            Int       @id @default(autoincrement())
+  media_id      Int
+  title         String    @db.VarChar(256)
+  description   String    @db.VarChar(2000)
+  link          String    @db.VarChar(2000)
+  available     Boolean   @default(true)
+  userCreatedId Int
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  userUpdatedId Int?
+  updatedAt     DateTime? @db.Timestamp
+
+  media     Media @relation(fields: [media_id], references: [id])
+  createdBy User  @relation(name: "user_created_banner", fields: [userCreatedId], references: [id])
+  updatedBy User? @relation(name: "user_updated_banner", fields: [userUpdatedId], references: [id])
+}
+
+model Product {
+  id             Int       @id @default(autoincrement())
+  media_id       Int
+  title          String    @db.VarChar(256)
+  description    String    @db.VarChar(2000)
+  bootstrap_icon String    @db.VarChar(2000)
+  content        String    @db.Text
+  available      Boolean   @default(true)
+  userCreatedId  Int
+  createdAt      DateTime  @default(now()) @db.Timestamp
+  userUpdatedId  Int?
+  updatedAt      DateTime? @db.Timestamp
+
+  media     Media      @relation(fields: [media_id], references: [id])
+  createdBy User       @relation(name: "user_created_product", fields: [userCreatedId], references: [id])
+  updatedBy User?      @relation(name: "user_updated_product", fields: [userUpdatedId], references: [id])
+  Proposal  Proposal[]
+}
+
+model News {
+  id            Int       @id @default(autoincrement())
+  media_id      Int
+  title         String    @db.VarChar(256)
+  description   String    @db.VarChar(2000)
+  content       String    @db.Text
+  available     Boolean   @default(true)
+  highlight     Boolean   @default(false)
+  publishDate   DateTime  @db.Timestamp
+  expireDate    DateTime  @db.Timestamp
+  userCreatedId Int
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  userUpdatedId Int?
+  updatedAt     DateTime? @db.Timestamp
+
+  media     Media @relation(fields: [media_id], references: [id])
+  createdBy User  @relation(name: "user_created_news", fields: [userCreatedId], references: [id])
+  updatedBy User? @relation(name: "user_updated_news", fields: [userUpdatedId], references: [id])
+}
+
+model Segment {
+  id            Int       @id @default(autoincrement())
+  title         String    @db.VarChar(256)
+  available     Boolean   @default(true)
+  userCreatedId Int
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  userUpdatedId Int?
+  updatedAt     DateTime? @db.Timestamp
+
+  createdBy User     @relation(name: "user_created_segment", fields: [userCreatedId], references: [id])
+  updatedBy User?    @relation(name: "user_updated_segment", fields: [userUpdatedId], references: [id])
+  Client    Client[]
+}
+
+model Client {
+  id            Int       @id @default(autoincrement())
+  media_id      Int
+  segment_id    Int
+  title         String    @db.VarChar(256)
+  available     Boolean   @default(true)
+  userCreatedId Int
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  userUpdatedId Int?
+  updatedAt     DateTime? @db.Timestamp
+
+  media     Media   @relation(fields: [media_id], references: [id])
+  segment   Segment @relation(fields: [segment_id], references: [id])
+  createdBy User    @relation(name: "user_created_client", fields: [userCreatedId], references: [id])
+  updatedBy User?   @relation(name: "user_updated_client", fields: [userUpdatedId], references: [id])
+}
+
+model Subject {
+  id            Int       @id @default(autoincrement())
+  title         String    @db.VarChar(256)
+  emails        String    @db.Text
+  available     Boolean   @default(true)
+  userCreatedId Int
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  userUpdatedId Int?
+  updatedAt     DateTime? @db.Timestamp
+
+  createdBy User      @relation(name: "user_created_subject", fields: [userCreatedId], references: [id])
+  updatedBy User?     @relation(name: "user_updated_subject", fields: [userUpdatedId], references: [id])
+  Contact   Contact[]
+}
+
+model Contact {
+  id         Int       @id @default(autoincrement())
+  subject_id Int
+  fullname   String    @db.VarChar(256)
+  email      String    @db.VarChar(256)
+  cellphone  String    @db.VarChar(50)
+  message    String    @db.VarChar(4000)
+  createdAt  DateTime  @default(now()) @db.Timestamp
+  updatedAt  DateTime? @db.Timestamp
+
+  subject Subject @relation(fields: [subject_id], references: [id])
+}
+
+model Area {
+  id            Int       @id @default(autoincrement())
+  title         String    @db.VarChar(256)
+  emails        String    @db.Text
+  available     Boolean   @default(true)
+  userCreatedId Int
+  createdAt     DateTime  @default(now()) @db.Timestamp
+  userUpdatedId Int?
+  updatedAt     DateTime? @db.Timestamp
+
+  createdBy  User         @relation(name: "user_created_area", fields: [userCreatedId], references: [id])
+  updatedBy  User?        @relation(name: "user_updated_area", fields: [userUpdatedId], references: [id])
+  WorkWithUs WorkWithUs[]
+}
+
+model WorkWithUs {
+  id        Int       @id @default(autoincrement())
+  area_id   Int
+  media_id  Int
+  fullname  String    @db.VarChar(256)
+  email     String    @db.VarChar(256)
+  cellphone String    @db.VarChar(50)
+  message   String    @db.VarChar(4000)
+  createdAt DateTime  @default(now()) @db.Timestamp
+  updatedAt DateTime? @db.Timestamp
+
+  area  Area  @relation(fields: [area_id], references: [id])
+  media Media @relation(fields: [media_id], references: [id])
+}
+
+model Proposal {
+  id         Int       @id @default(autoincrement())
+  product_id Int
+  fullname   String    @db.VarChar(256)
+  email      String    @db.VarChar(256)
+  cellphone  String    @db.VarChar(50)
+  message    String    @db.VarChar(4000)
+  createdAt  DateTime  @default(now()) @db.Timestamp
+  updatedAt  DateTime? @db.Timestamp
+
+  product Product @relation(fields: [product_id], references: [id])
+}
