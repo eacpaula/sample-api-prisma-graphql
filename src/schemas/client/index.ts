@@ -13,7 +13,6 @@ import {
 	Int,
 } from 'type-graphql'
 import { User } from '../user/User'
-import { Segment } from '../segment/Segment'
 import { Media } from '../media/Media'
 import { Client } from './Client'
 import { Context } from '../../config/context'
@@ -27,9 +26,6 @@ class ClientInput {
 
 	@Field(() => Int)
 	media_id: number
-
-	@Field(() => Int)
-	segment_id: number
 
 	@Field()
 	title: string
@@ -52,9 +48,6 @@ class ClientInput {
 
 @InputType()
 class SearchInputClient extends SearchInput {
-	@Field(() => Int, { nullable: true })
-	segment_id?: number | null
-
 	@Field({ nullable: true })
 	available?: boolean
 }
@@ -73,20 +66,6 @@ export class ClientResolver {
 				},
 			})
 			.media()
-	}
-
-	@FieldResolver()
-	async segment(
-		@Root() client: Client,
-		@Ctx() ctx: Context
-	): Promise<Segment | null> {
-		return ctx.prisma.client
-			.findUnique({
-				where: {
-					id: client.id,
-				},
-			})
-			.segment()
 	}
 
 	@FieldResolver()
@@ -143,11 +122,6 @@ export class ClientResolver {
 						id: data.media_id,
 					},
 				},
-				segment: {
-					connect: {
-						id: data.segment_id,
-					},
-				},
 				createdAt: data.createdAt,
 			},
 		})
@@ -177,11 +151,6 @@ export class ClientResolver {
 				media: {
 					connect: {
 						id: data.media_id,
-					},
-				},
-				segment: {
-					connect: {
-						id: data.segment_id,
 					},
 				},
 				updatedAt: data.updatedAt,
@@ -224,23 +193,6 @@ export class ClientResolver {
 		@Arg('params') params: SearchInputClient,
 		@Ctx() ctx: Context
 	): Promise<Client[]> {
-		if (params.segment_id)
-			return ctx.prisma.client.findMany({
-				skip: params.skip,
-				take: params.take,
-				where: {
-					title: {
-						contains: params.term,
-					},
-					segment_id: {
-						equals: params.segment_id,
-					},
-					available: {
-						equals: params.available,
-					},
-				},
-			})
-
 		return ctx.prisma.client.findMany({
 			skip: params.skip,
 			take: params.take,

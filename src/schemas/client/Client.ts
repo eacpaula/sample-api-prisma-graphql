@@ -1,7 +1,6 @@
 import 'reflect-metadata'
 import { ObjectType, Field, ID, GraphQLTimestamp } from 'type-graphql'
 import { Media } from '../media/Media'
-import { Segment } from '../segment/Segment'
 import { User } from '../user/User'
 
 @ObjectType()
@@ -11,9 +10,6 @@ export class Client {
 
 	@Field(() => ID)
 	media_id: number
-
-	@Field(() => ID)
-	segment_id: number
 
 	@Field()
 	title: string
@@ -35,9 +31,6 @@ export class Client {
 
 	@Field(() => Media, { nullable: true })
 	media?: Media | null
-
-	@Field(() => Segment, { nullable: true })
-	segment?: Segment | null
 
 	@Field(() => User, { nullable: true })
 	createdBy?: User | null

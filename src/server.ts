@@ -52,7 +52,9 @@ const app: Application = express()
 
 app.use(express.static(`${process.cwd()}/${process.env.UPLOAD_DIRECTORY}`))
 app.use(logger('dev'))
-app.use('*', cors())
+app.use((req, res, next) => {
+	next()
+}, cors({ maxAge: 84600 }))
 app.use(compression())
 
 const SECRET = <string>process.env.API_SECRET

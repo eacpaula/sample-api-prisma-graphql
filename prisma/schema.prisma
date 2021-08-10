@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["nativeTypes"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -19,14 +18,12 @@ model User {
   banners  Banner[]  @relation("user_created_banner")
   products Product[] @relation("user_created_product")
   news     News[]    @relation("user_created_news")
-  segments Segment[] @relation("user_created_segment")
   clients  Client[]  @relation("user_created_client")
   subjects Subject[] @relation("user_created_subject")
   areas    Area[]    @relation("user_created_area")
   Banner   Banner[]  @relation("user_updated_banner")
   Product  Product[] @relation("user_updated_product")
   News     News[]    @relation("user_updated_news")
-  Segment  Segment[] @relation("user_updated_segment")
   Client   Client[]  @relation("user_updated_client")
   Subject  Subject[] @relation("user_updated_subject")
   Area     Area[]    @relation("user_updated_area")
@@ -107,24 +104,9 @@ model News {
   updatedBy User? @relation(name: "user_updated_news", fields: [userUpdatedId], references: [id])
 }
 
-model Segment {
-  id            Int       @id @default(autoincrement())
-  title         String    @db.VarChar(256)
-  available     Boolean   @default(true)
-  userCreatedId Int
-  createdAt     DateTime  @default(now()) @db.Timestamp
-  userUpdatedId Int?
-  updatedAt     DateTime? @db.Timestamp
-
-  createdBy User     @relation(name: "user_created_segment", fields: [userCreatedId], references: [id])
-  updatedBy User?    @relation(name: "user_updated_segment", fields: [userUpdatedId], references: [id])
-  Client    Client[]
-}
-
 model Client {
   id            Int       @id @default(autoincrement())
   media_id      Int
-  segment_id    Int
   title         String    @db.VarChar(256)
   available     Boolean   @default(true)
   userCreatedId Int
@@ -132,10 +114,9 @@ model Client {
   userUpdatedId Int?
   updatedAt     DateTime? @db.Timestamp
 
-  media     Media   @relation(fields: [media_id], references: [id])
-  segment   Segment @relation(fields: [segment_id], references: [id])
-  createdBy User    @relation(name: "user_created_client", fields: [userCreatedId], references: [id])
-  updatedBy User?   @relation(name: "user_updated_client", fields: [userUpdatedId], references: [id])
+  media     Media @relation(fields: [media_id], references: [id])
+  createdBy User  @relation(name: "user_created_client", fields: [userCreatedId], references: [id])
+  updatedBy User? @relation(name: "user_updated_client", fields: [userUpdatedId], references: [id])
 }
 
 model Subject {

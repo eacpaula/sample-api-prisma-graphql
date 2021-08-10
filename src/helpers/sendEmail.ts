@@ -1,5 +1,6 @@
 import * as nodemailer from 'nodemailer'
 import Mail from 'nodemailer/lib/mailer'
+import SMTPTransport from 'nodemailer/lib/smtp-transport'
 
 export default async (
 	subject: string,
@@ -40,16 +41,11 @@ export default async (
 		html: message,
 	}
 
-	let info = null
-
-	try {
-		info = await transporter.sendMail(options)
-	} catch (error) {
-		console.log(error)
-	}
-
-	console.log('Message sent: %s', info.messageId)
-	console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
-
-	return info
+	return await transporter
+		.sendMail(options)
+		.then(result => {
+			console.info('Message sent: %s', result.messageId)
+			console.info('Preview URL: %s', nodemailer.getTestMessageUrl(result))
+		})
+		.catch((error) => console.error('Nodemailer Error: ', error))
 }

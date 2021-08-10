@@ -75,23 +75,9 @@ CREATE TABLE "News" (
 );
 
 -- CreateTable
-CREATE TABLE "Segment" (
-"id" SERIAL,
-    "title" TEXT NOT NULL,
-    "available" BOOLEAN NOT NULL DEFAULT true,
-    "userCreatedId" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "userUpdatedId" INTEGER,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Client" (
 "id" SERIAL,
     "media_id" INTEGER NOT NULL,
-    "segment_id" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "available" BOOLEAN NOT NULL DEFAULT true,
     "userCreatedId" INTEGER NOT NULL,
@@ -202,16 +188,7 @@ ALTER TABLE "News" ADD FOREIGN KEY("userCreatedId")REFERENCES "User"("id") ON DE
 ALTER TABLE "News" ADD FOREIGN KEY("userUpdatedId")REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Segment" ADD FOREIGN KEY("userCreatedId")REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Segment" ADD FOREIGN KEY("userUpdatedId")REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Client" ADD FOREIGN KEY("media_id")REFERENCES "Media"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Client" ADD FOREIGN KEY("segment_id")REFERENCES "Segment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Client" ADD FOREIGN KEY("userCreatedId")REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
